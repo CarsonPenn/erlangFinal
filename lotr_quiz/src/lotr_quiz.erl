@@ -3,8 +3,8 @@
 
 % --- Corrected Imports ---
 -import(lists, [shuffle/1, take/2, reverse/1]).
--import(io, [format/2, get_line/1]). 
--import(string, [strip/1, lower/1]). 
+-import(io, [format/2, get_line/1]).
+-import(string, [strip/1]). % Removed lower/1
 
 % format for questions and answer
 -record(question, {prompt, answer}).
@@ -43,27 +43,30 @@ game_loop() ->
         io:format(" Choose your difficulty Easy, Medium, or Hard (E, M, H): "),
         case io:get_line("") of
             Line when is_list(Line) ->
-                CleanInput = string:lower(string:strip(Line)),
+                CleanInput = string:strip(Line),
                 case CleanInput of
-                    "e" -> {ok, easy, lotr_questions_easy:get_questions()};
-                    "m" -> {ok, medium, lotr_questions_medium:get_questions()};
-                    "h" -> {ok, hard, lotr_questions_hard:get_questions()};
+                    "E" -> {ok, easy, lotr_questions_easy:get_questions()};
+                    "M" -> {ok, medium, lotr_questions_medium:get_questions()};
+                    "H" -> {ok, hard, lotr_questions_hard:get_questions()};
+                    "e" -> {ok, easy, lotr_questions_easy:get_questions()}; % Added lowercase
+                    "m" -> {ok, medium, lotr_questions_medium:get_questions()}; % Added lowercase
+                    "h" -> {ok, hard, lotr_questions_hard:get_questions()};   % Added lowercase
                     _ ->
                         io:format("Invalid input '~s'. Please choose only E, M, or H.~n", [CleanInput]),
                         get_difficulty() % Retry on bad input
                 end;
-    
+
             eof ->
                 io:format("End of input detected.~n"),
                 {error, invalid_input};
-    
+
             {error, Reason} ->
                 io:format("Error reading difficulty: ~p~n", [Reason]),
                 {error, invalid_input}
         end.
-    
 
-% --- ask_questions 
+
+% --- ask_questions
 ask_questions(Questions) ->
     ask_questions(Questions, 1, 0, []).
 
@@ -76,7 +79,7 @@ ask_questions([#question{prompt = Prompt, answer = CorrectLetter}|Rest], Index, 
     io:format("Your choice (a, b, or c): "), % Ask for letter choice
     case io:get_line("") of
         {ok, UserAnswerLine} ->
-            UserChoice = string:lower(string:strip(UserAnswerLine)), % Clean input (strip whitespace, lower case)
+            UserChoice = string:strip(UserAnswerLine), % Clean input (strip whitespace)
 
             IsCorrect = case UserChoice of
                 "a" -> UserChoice == CorrectLetter; % Compare with stored correct letter
@@ -109,7 +112,7 @@ see_answers_option(QuestionsAndAnswers) ->
     io:format("Would you like to review the answers? (y/n): "),
     case io:get_line("") of
         {ok, Line} ->
-             CleanInput = string:lower(string:strip(Line)),
+             CleanInput = string:strip(Line),
             case CleanInput of
                 "y" -> print_questions_and_answers(QuestionsAndAnswers);
                 "n" -> ok;
@@ -150,7 +153,7 @@ play_again_option() ->
     io:format("Would you like to play again? (y/n): "),
     case io:get_line("") of
          {ok, Line} ->
-            CleanInput = string:lower(string:strip(Line)),
+            CleanInput = string:strip(Line),
             case CleanInput of
                 "y" -> main(); % Restart the game
                 "n" -> io:format("Ná márië! (Farewell!)~n");

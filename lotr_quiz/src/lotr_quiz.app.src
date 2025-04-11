@@ -1,0 +1,12 @@
+{application, lotr_quiz,
+ [{description, "An OTP application"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, {lotrquiz, []}}, % Ensure your main module is listed here
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {start_phases, []}
+ ]}.
